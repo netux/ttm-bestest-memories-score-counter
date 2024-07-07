@@ -143,10 +143,6 @@
   }
 </script>
 
-<svelte:head>
-	<title>TTM Bestest Dancers - Score calculator</title>
-</svelte:head>
-
 {#if mode === Mode.CONFIG}
 	<div>
 		<label for="numberOfPlayers">Number of players</label>
