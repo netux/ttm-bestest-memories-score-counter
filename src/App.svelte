@@ -218,6 +218,8 @@
 								class:card--unavailable={!player.memories.has(card) &&
 									!memoryCardsInPlay.has(card)}
 								aria-checked={player.memories.has(card)}
+								aria-disabled={!player.memories.has(card) &&
+									!memoryCardsInPlay.has(card)}
 								role="switch"
 								tabindex={cardIndex}
 								on:click={() => playerCollectMemory(player, card)}
