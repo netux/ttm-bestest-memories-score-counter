@@ -326,7 +326,7 @@
 		padding: 0;
 		aspect-ratio: 377 / 512;
 		height: 128px;
-		opacity: 0.5;
+		opacity: 0.3;
 		border: none;
 
 		&--unavailable {
@@ -339,7 +339,7 @@
 				left: 0;
 				width: 100%;
 				height: 100%;
-				background-color: rgba(red, 0.3);
+				background-color: rgba(red, 0.5);
 			}
 		}
 
