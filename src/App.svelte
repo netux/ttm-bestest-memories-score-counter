@@ -211,7 +211,7 @@
 
 				<div class="player__card-picker">
 					{#each MEMORY_CARDS as card, cardIndex}
-						{#if dumbLazyMatch(card.name, player.cardFilter)}
+						{#if dumbLazyMatch(cardFullName(card.name), player.cardFilter)}
 							<button
 								class="card"
 								class:card--in-hand={player.memories.has(card)}
