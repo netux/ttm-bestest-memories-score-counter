@@ -29,8 +29,8 @@
 	let memoryCardsInPlay: Set<MemoryCard>;
 
 	function start() {
-    if (numberOfPlayers < 2) {
-      numberOfPlayers = 2;
+    if (numberOfPlayers < 1) {
+      numberOfPlayers = 1;
     }
 
 		mode = Mode.PLAYING;
@@ -149,7 +149,7 @@
 		<input
       name="numberOfPlayers"
       type="number"
-      min="2"
+      min="1"
       bind:value={numberOfPlayers}
     />
 	</div>
