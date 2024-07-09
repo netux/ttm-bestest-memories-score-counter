@@ -8,12 +8,12 @@ export enum Emotion {
 }
 
 export enum ScoreEffect {
+	CountAllEmotionsInHand = "Count all emotions in hand",
+	CountAllMemories = "Count all memories",
+	StargazingAndDaydreamingBecomeSixPoints = "Make Stargazing and Daydreaming worth 6 points each",
 	DoubleAllNonHappinessMemories = "Double all memories that don't require happiness",
 	DoubleGraduationDayMemory = "Double value of Graduation Day",
-	DoubleFirstDayOfSchoolMemory = "Double value of First Day of School",
-	StargazingAndDaydreamingBecomeSixPoints = "Make Stargazing and Daydreaming worth 6 points each",
-	CountAllEmotionsInHand = "Count all emotions in hand",
-	CountAllMemories = "Count all memories"
+	DoubleFirstDayOfSchoolMemory = "Double value of First Day of School"
 }
 
 export interface MemoryCard {
