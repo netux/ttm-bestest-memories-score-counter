@@ -1,22 +1,18 @@
 <!-- TODO(netux): split this into multiple files 🙃 -->
 
 <script lang="ts">
-	import { MEMORY_CARDS } from './lib/constants';
+	import { MEMORY_CARDS } from "./lib/constants";
 	import {
 		type MemoryCard,
 		type Player,
 		UNCALCULABLE_SCORE_SYMBOL
-	} from './lib/model';
-  import {
-    calculateScore,
-    cardFullName,
-    dumbLazyMatch
-  } from './lib/util';
+	} from "./lib/model";
+	import { calculateScore, cardFullName, dumbLazyMatch } from "./lib/util";
 
 	enum Mode {
-		CONFIG = 'config',
-		PLAYING = 'playing',
-		FINISHED = 'finished'
+		CONFIG = "config",
+		PLAYING = "playing",
+		FINISHED = "finished"
 	}
 
 	let mode = Mode.CONFIG;
@@ -29,9 +25,9 @@
 	let memoryCardsInPlay: Set<MemoryCard>;
 
 	function start() {
-    if (numberOfPlayers < 1) {
-      numberOfPlayers = 1;
-    }
+		if (numberOfPlayers < 1) {
+			numberOfPlayers = 1;
+		}
 
 		mode = Mode.PLAYING;
 
@@ -40,7 +36,7 @@
 			name: `Player ${playerIndex + 1}`,
 			memories: new Set(),
 			numberOfEmotionsInHand: null,
-			cardFilter: '',
+			cardFilter: "",
 			score: hideScoresWhileGameIsInProgress ? null : 0
 		}));
 		memoryCardsInPlay = new Set(Array.from(MEMORY_CARDS));
@@ -58,7 +54,7 @@
 						const response = prompt(
 							`Emotion cards in hand for ${player.name || `Player ${playerIndex}`}`
 						);
-						const responseFloat = parseFloat(response || '');
+						const responseFloat = parseFloat(response || "");
 						if (!response || isNaN(responseFloat) || !isFinite(responseFloat)) {
 							continue;
 						}
@@ -72,7 +68,7 @@
 
 			if (score === UNCALCULABLE_SCORE_SYMBOL) {
 				throw new Error(
-					'Uncalculable score, even though we prompted player for their score'
+					"Uncalculable score, even though we prompted player for their score"
 				);
 			}
 
@@ -90,88 +86,90 @@
 		mode = Mode.PLAYING;
 	}
 
-  function playerCollectMemory(player: Player, card: MemoryCard) {
-    if (!player.memories.has(card)) {
-      // Remove card from roster or other player's stash,
-      // add to player's stash
+	function playerCollectMemory(player: Player, card: MemoryCard) {
+		if (!player.memories.has(card)) {
+			// Remove card from roster or other player's stash,
+			// add to player's stash
 
-      for (const [otherPlayerIndex, otherPlayer] of players.entries()) {
-        const otherPlayerAlreadyHasMemoryCard = otherPlayer.memories.has(card);
-        if (otherPlayerAlreadyHasMemoryCard) {
-          const playerIndex = players.indexOf(player);
-          const doContinue = confirm([
-            `${otherPlayer.name || `Player ${otherPlayerIndex + 1}`} already has ${cardFullName(card)}.`,
-            `Do you want to take the card from them, and give it to ${player.name || `Player ${playerIndex + 1}`}?`
-          ].join("\n"));
-          if (!doContinue) {
-            return;
-          }
-        }
+			for (const [otherPlayerIndex, otherPlayer] of players.entries()) {
+				const otherPlayerAlreadyHasMemoryCard = otherPlayer.memories.has(card);
+				if (otherPlayerAlreadyHasMemoryCard) {
+					const playerIndex = players.indexOf(player);
+					const doContinue = confirm(
+						[
+							`${otherPlayer.name || `Player ${otherPlayerIndex + 1}`} already has ${cardFullName(card)}.`,
+							`Do you want to take the card from them, and give it to ${player.name || `Player ${playerIndex + 1}`}?`
+						].join("\n")
+					);
+					if (!doContinue) {
+						return;
+					}
+				}
 
-        otherPlayer.memories.delete(card);
+				otherPlayer.memories.delete(card);
 
-        if (otherPlayerAlreadyHasMemoryCard) {
-          if (!hideScoresWhileGameIsInProgress) {
-            const score = calculateScore(otherPlayer, {
-              promptEmotionsInHand: () => UNCALCULABLE_SCORE_SYMBOL
-            });
-            otherPlayer.score = score;
-          }
+				if (otherPlayerAlreadyHasMemoryCard) {
+					if (!hideScoresWhileGameIsInProgress) {
+						const score = calculateScore(otherPlayer, {
+							promptEmotionsInHand: () => UNCALCULABLE_SCORE_SYMBOL
+						});
+						otherPlayer.score = score;
+					}
 
-          break;
-        }
-      }
+					break;
+				}
+			}
 
-      memoryCardsInPlay.delete(card);
+			memoryCardsInPlay.delete(card);
 
-      player.memories.add(card);
-    } else {
-      // Re-add card to roster, remove from player's stash
-      player.memories.delete(card);
-      memoryCardsInPlay.add(card);
-    }
+			player.memories.add(card);
+		} else {
+			// Re-add card to roster, remove from player's stash
+			player.memories.delete(card);
+			memoryCardsInPlay.add(card);
+		}
 
-    if (!hideScoresWhileGameIsInProgress) {
-      const score = calculateScore(player, {
-        promptEmotionsInHand: () => UNCALCULABLE_SCORE_SYMBOL
-      });
-      player.score = score;
-    }
+		if (!hideScoresWhileGameIsInProgress) {
+			const score = calculateScore(player, {
+				promptEmotionsInHand: () => UNCALCULABLE_SCORE_SYMBOL
+			});
+			player.score = score;
+		}
 
-    memoryCardsInPlay = memoryCardsInPlay; // rerender
-    players = players; // rerender
-  }
+		memoryCardsInPlay = memoryCardsInPlay; // rerender
+		players = players; // rerender
+	}
 </script>
 
 {#if mode === Mode.CONFIG}
 	<div>
 		<label for="numberOfPlayers">Number of players</label>
 		<input
-      name="numberOfPlayers"
-      type="number"
-      min="1"
-      bind:value={numberOfPlayers}
-    />
+			name="numberOfPlayers"
+			type="number"
+			min="1"
+			bind:value={numberOfPlayers}
+		/>
 	</div>
 	<div>
 		<label for="hideScoresWhileGameIsInProgress">
-      <input
-        name="hideScoresWhileGameIsInProgress"
-        type="checkbox"
-        bind:checked={hideScoresWhileGameIsInProgress}
-      />
-      Hide scores while game is in progress
-    </label>
+			<input
+				name="hideScoresWhileGameIsInProgress"
+				type="checkbox"
+				bind:checked={hideScoresWhileGameIsInProgress}
+			/>
+			Hide scores while game is in progress
+		</label>
 	</div>
 	<div>
 		<label for="showCardImages">
-		  <input
-        name="showCardImages"
-        type="checkbox"
-        bind:checked={showCardImages}
-      />
-      Show card images (laggier the more players there are)
-    </label>
+			<input
+				name="showCardImages"
+				type="checkbox"
+				bind:checked={showCardImages}
+			/>
+			Show card images (laggier the more players there are)
+		</label>
 	</div>
 	<footer>
 		<button class="start-game-btn" on:click={start}>Start Game</button>
@@ -188,25 +186,34 @@
 					/>
 					{#if !hideScoresWhileGameIsInProgress}
 						<div
-              class="player__score"
-              class:player__score--uncalculable={player.score === UNCALCULABLE_SCORE_SYMBOL}
-            >
-              {#if player.score === UNCALCULABLE_SCORE_SYMBOL}
-                <span title="Score will depend on how many emotion cards this player has at the end of the game">?</span>
-              {:else}
-                {player.score}
-              {/if}
-            </div>
+							class="player__score"
+							class:player__score--uncalculable={player.score ===
+								UNCALCULABLE_SCORE_SYMBOL}
+						>
+							{#if player.score === UNCALCULABLE_SCORE_SYMBOL}
+								<span
+									title="Score will depend on how many emotion cards this player has at the end of the game"
+									>?</span
+								>
+							{:else}
+								{player.score}
+							{/if}
+						</div>
 					{/if}
 				</header>
 
 				<div class="player__card-filter card-filter">
-					<label for={`player-${playerIndex}-card-search`}>Search for card:</label>
+					<label for={`player-${playerIndex}-card-search`}
+						>Search for card:</label
+					>
 					<input
 						name={`player-${playerIndex}-card-search`}
 						bind:value={player.cardFilter}
 					/>
-          <button class="card-filter__clear-btn" on:click={() => player.cardFilter = ''}>clear</button>
+					<button
+						class="card-filter__clear-btn"
+						on:click={() => (player.cardFilter = "")}>clear</button
+					>
 				</div>
 
 				<div class="player__card-picker">
@@ -247,7 +254,7 @@
 		<button on:click={end}>End Game</button>
 	</footer>
 {:else if mode === Mode.FINISHED}
-  <h3>Final scores</h3>
+	<h3>Final scores</h3>
 
 	{#each players as player, index}
 		<p>{player.name || `Player ${index + 1}`}: {player.score}</p>
@@ -281,30 +288,30 @@
 	}
 
 	.player {
-    &__header {
+		&__header {
 			margin-bottom: 0.5rem;
 			font-size: 2rem;
-      display: flex;
-    }
+			display: flex;
+		}
 
 		&__name {
-      font-size: inherit;
+			font-size: inherit;
 			text-align: center;
 			border: none;
 			flex-grow: 1;
 		}
 
-    &__score {
-      margin: 0 0.5rem;
-      font-family: monospace;
-      flex-grow: 0;
-      flex-shrink: 1;
+		&__score {
+			margin: 0 0.5rem;
+			font-family: monospace;
+			flex-grow: 0;
+			flex-shrink: 1;
 
-      &--uncalculable {
-        cursor: help;
-        text-decoration: underline dashed;
-      }
-    }
+			&--uncalculable {
+				cursor: help;
+				text-decoration: underline dashed;
+			}
+		}
 
 		&__card-picker {
 			margin: 0.25rem;
@@ -315,14 +322,14 @@
 		}
 	}
 
-  .card-filter {
-    margin: 0 0.5rem;
+	.card-filter {
+		margin: 0 0.5rem;
 
-    &__clear-btn {
-      font-size: 1rem;
-      padding-block: 0;
-    }
-  }
+		&__clear-btn {
+			font-size: 1rem;
+			padding-block: 0;
+		}
+	}
 
 	.card {
 		padding: 0;
@@ -335,7 +342,7 @@
 			position: relative;
 
 			&::after {
-				content: '';
+				content: "";
 				position: absolute;
 				top: 0;
 				left: 0;
@@ -361,7 +368,7 @@
 		width: 100%;
 		display: flex;
 		place-content: center;
-    gap: 1rem;
+		gap: 1rem;
 
 		button {
 			font-size: 2rem;

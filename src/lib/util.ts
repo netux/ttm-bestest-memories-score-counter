@@ -1,5 +1,16 @@
-import { DAYDREAMING_MEMORY_CARD, FIRST_DAY_OF_SCHOOL_MEMORY_CARD, GRADUATION_DAY_MEMORY_CARD, STARGAZING_MEMORY_CARD } from './constants'
-import { type Player, type MemoryCard, Emotion, ScoreEffect, UNCALCULABLE_SCORE_SYMBOL } from './model'
+import {
+	DAYDREAMING_MEMORY_CARD,
+	FIRST_DAY_OF_SCHOOL_MEMORY_CARD,
+	GRADUATION_DAY_MEMORY_CARD,
+	STARGAZING_MEMORY_CARD
+} from "./constants";
+import {
+	type Player,
+	type MemoryCard,
+	Emotion,
+	ScoreEffect,
+	UNCALCULABLE_SCORE_SYMBOL
+} from "./model";
 
 interface CalculateScoreOptions {
 	promptEmotionsInHand: () => number | typeof UNCALCULABLE_SCORE_SYMBOL;
@@ -19,7 +30,10 @@ export function calculateScore(
 	}
 
 	const allCardValuesMap: Record<string, CardCalculatedValue> = {};
-	const cardValueScoreEffectMap = {} as Record<ScoreEffect, CardCalculatedValue[]>;
+	const cardValueScoreEffectMap = {} as Record<
+		ScoreEffect,
+		CardCalculatedValue[]
+	>;
 	for (const memoryCard of player.memories) {
 		const cardValue: CardCalculatedValue = {
 			card: memoryCard,
@@ -47,7 +61,8 @@ export function calculateScore(
 		ScoreEffect.DoubleAllNonHappinessMemories
 	];
 	for (const scoreEffect of effectApplyingOrder) {
-		const calculatedValuesOfCardsWithScoreEffect = cardValueScoreEffectMap[scoreEffect];
+		const calculatedValuesOfCardsWithScoreEffect =
+			cardValueScoreEffectMap[scoreEffect];
 
 		if (!calculatedValuesOfCardsWithScoreEffect) {
 			// player doesn't have a card with this score effect - ignore
@@ -90,7 +105,12 @@ export function calculateScore(
 				break;
 			}
 			case ScoreEffect.DoubleFirstDayOfSchoolMemory: {
-				for (let _i = 0; _i < calculatedValuesOfCardsWithScoreEffect.length; _i++) { // as many times as cards with this score effect there are
+				for (
+					let _i = 0;
+					_i < calculatedValuesOfCardsWithScoreEffect.length;
+					_i++
+				) {
+					// as many times as cards with this score effect there are
 					if (player.memories.has(FIRST_DAY_OF_SCHOOL_MEMORY_CARD)) {
 						allCardValuesMap[FIRST_DAY_OF_SCHOOL_MEMORY_CARD.name].value! *= 2;
 					}
@@ -99,7 +119,12 @@ export function calculateScore(
 				break;
 			}
 			case ScoreEffect.DoubleGraduationDayMemory: {
-				for (let _i = 0; _i < calculatedValuesOfCardsWithScoreEffect.length; _i++) { // as many times as cards with this score effect there are
+				for (
+					let _i = 0;
+					_i < calculatedValuesOfCardsWithScoreEffect.length;
+					_i++
+				) {
+					// as many times as cards with this score effect there are
 					if (player.memories.has(GRADUATION_DAY_MEMORY_CARD)) {
 						allCardValuesMap[GRADUATION_DAY_MEMORY_CARD.name].value! *= 2;
 					}
@@ -108,11 +133,18 @@ export function calculateScore(
 				break;
 			}
 			case ScoreEffect.DoubleAllNonHappinessMemories: {
-				for (let _i = 0; _i < calculatedValuesOfCardsWithScoreEffect.length; _i++) { // as many times as cards with this score effect there are
+				for (
+					let _i = 0;
+					_i < calculatedValuesOfCardsWithScoreEffect.length;
+					_i++
+				) {
+					// as many times as cards with this score effect there are
 					for (const otherCalculatedValues of Object.values(allCardValuesMap)) {
 						if (
 							otherCalculatedValues.value != null &&
-							!otherCalculatedValues.card.emotionsNeeded.includes(Emotion.Happiness)
+							!otherCalculatedValues.card.emotionsNeeded.includes(
+								Emotion.Happiness
+							)
 						) {
 							otherCalculatedValues.value *= 2;
 						}
@@ -126,19 +158,17 @@ export function calculateScore(
 
 	// WRAP-UP:
 	// Sum up all calculated values into a final score
-	const score = Object.values(allCardValuesMap)
-		.reduce((total, { value }) => {
-			return total += value ?? 0;
-		}, 0);
+	const score = Object.values(allCardValuesMap).reduce((total, { value }) => {
+		return (total += value ?? 0);
+	}, 0);
 	return score;
 }
 
 export function cardFullName(card: MemoryCard) {
-	return `[${card.points ?? card.scoreEffect ?? '-'}] ${card.name}`;
+	return `[${card.points ?? card.scoreEffect ?? "-"}] ${card.name}`;
 }
 
 export function dumbLazyMatch(haystack: string, needle: string) {
-	const atomizize = (s: string) =>
-		s.toLocaleLowerCase().replace(/[^a-z]/g, '');
+	const atomizize = (s: string) => s.toLocaleLowerCase().replace(/[^a-z]/g, "");
 	return atomizize(haystack).includes(atomizize(needle));
 }
